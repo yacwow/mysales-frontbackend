@@ -26,42 +26,44 @@ public class DailyNewProductController {
         stringBuilder.append("limit ").append((page - 1) * 60).append(" , 60");
         Long number;
         List<DailyNewProduct> dailyNewProducts = new ArrayList<>();
-        List<Product> products=new ArrayList<>();
+        List<Product> products = new ArrayList<>();
         if (params == null || params.equals("ALL")) {
             System.out.println("in1");
             //找所有的newproduct
-            number = productService.count(new QueryWrapper<Product>().eq("newproduct", 1));
-            products = productService.list(new QueryWrapper<Product>().select("recommend","productdescription", "newprice",
-                            "href", "tenpercentoff", "secondonehalf", "bigimgsrc", "marketprice").eq("newproduct", 1)
-                    .last(stringBuilder.toString()));
+            number = productService.count(new QueryWrapper<Product>().gt("newproduct", 0));
+            products = productService.list(new QueryWrapper<Product>().select( "productdescription", "newprice",
+                            "href", "tenpercentoff", "secondonehalf", "bigimgsrc", "marketprice", "newproduct").gt("newproduct", 0)
+                    .orderByDesc("newproduct").last(stringBuilder.toString()));
         } else if (params.equals("bagGoods")) {
             System.out.println("in2");
             //secondlevel category
-            number = productService.count(new QueryWrapper<Product>().eq("newproduct", 1).eq("secondlevelcategory",params));
-            products = productService.list(new QueryWrapper<Product>().select("recommend","productdescription", "newprice",
-                            "href", "tenpercentoff", "secondonehalf", "bigimgsrc", "marketprice").eq("newproduct", 1).eq("secondlevelcategory",params)
-                    .last(stringBuilder.toString()));
+            number = productService.count(new QueryWrapper<Product>().gt("newproduct", 0).eq("secondlevelcategory", params));
+            products = productService.list(new QueryWrapper<Product>().select("productdescription", "newprice",
+                            "href", "tenpercentoff", "secondonehalf", "bigimgsrc", "marketprice", "newproduct").gt("newproduct", 0).eq("secondlevelcategory", params)
+                    .orderByDesc("newproduct").last(stringBuilder.toString()));
         } else {
             //firstlevel category
-            number = productService.count(new QueryWrapper<Product>().eq("newproduct", 1).eq("firstlevelcategory",params));
-            products = productService.list(new QueryWrapper<Product>().select("recommend","productdescription", "newprice",
-                            "href", "tenpercentoff", "secondonehalf", "bigimgsrc", "marketprice").eq("newproduct", 1).eq("firstlevelcategory",params)
-                    .last(stringBuilder.toString()));
+            number = productService.count(new QueryWrapper<Product>().gt("newproduct", 0).eq("firstlevelcategory", params));
+            products = productService.list(new QueryWrapper<Product>().select( "productdescription", "newprice",
+                            "href", "tenpercentoff", "secondonehalf", "bigimgsrc", "marketprice", "newproduct").gt("newproduct", 0).eq("firstlevelcategory", params)
+                    .orderByDesc("newproduct").last(stringBuilder.toString()));
         }
-        products.sort(new Comparator<Product>() {
-            @Override
-            public int compare(Product o1, Product o2) {
-                if(o1.getRecommend()==null) return -1;
-                return o2.getRecommend()-o1.getRecommend();
-            }
-        });
+//        products.sort(new Comparator<Product>() {
+//            @Override
+//            public int compare(Product o1, Product o2) {
+//                if (o1.getRecommend() == null) return -1;
+//                return o2.getNewproduct() - o1.getNewproduct();
+//            }
+//        });
+//        System.out.println(products);
         for (int i = 0; i < products.size(); i++) {
-            dailyNewProducts.add(new DailyNewProduct(products.get(i).getProductdescription(),products.get(i).getTenpercentoff(),
-                    products.get(i).getSecondonehalf(),products.get(i).getHref(),products.get(i).getBigimgsrc(),products.get(i).getNewprice(),products.get(i).getMarketprice()));
+            Integer j= products.size()-i-1;
+            dailyNewProducts.add(new DailyNewProduct(products.get(i).getProductdescription(), products.get(i).getTenpercentoff(),
+                    products.get(i).getSecondonehalf(), products.get(i).getHref(), products.get(i).getBigimgsrc(), products.get(i).getNewprice(), products.get(i).getMarketprice()));
         }
-        Map<String,Object> map =new HashMap<>();
-        map.put("total",number);
-        map.put("dailyNewProduct",dailyNewProducts);
+        Map<String, Object> map = new HashMap<>();
+        map.put("total", number);
+        map.put("dailyNewProduct", dailyNewProducts);
 
 
         return ResultMsg.ok().data(map);

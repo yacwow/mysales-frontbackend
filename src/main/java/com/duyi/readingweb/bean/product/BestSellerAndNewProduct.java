@@ -15,7 +15,7 @@ public class BestSellerAndNewProduct {
     private String imgSrc;
     private Integer price;
     private Integer commentNumber;
-    private Boolean newProduct;
+    private Integer newProduct;
 
 
 }

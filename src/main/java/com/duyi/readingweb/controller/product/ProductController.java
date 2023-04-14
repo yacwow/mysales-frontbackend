@@ -179,11 +179,11 @@ public class ProductController {
 
     public List<MustBuyProduct> getMustBuyProduct(String category, Integer num) {
         List<Product> productList = productService.list(new QueryWrapper<Product>().select("idProduct", "productDescription", "tenpercentoff", "secondOneHalf",
-                "href", "newPrice", "mustBuyRate", "newProduct", "bigImgSrc").eq("firstLevelCategory", category));
+                "href", "newPrice", "firstlevelcategoryrank", "newProduct", "bigImgSrc").eq("firstLevelCategory", category));
         productList.sort(new Comparator<Product>() {
             @Override
             public int compare(Product o1, Product o2) {
-                return o2.getMustbuyrate() - o1.getMustbuyrate();
+                return o2.getFirstlevelcategoryrank() - o1.getFirstlevelcategoryrank();
             }
         });
         List<MustBuyProduct> MustBuyProductList = new ArrayList<>();
@@ -208,11 +208,11 @@ public class ProductController {
     //getBestSellerAndNewProduct方法的工具方法和getBestSellerPage的betSeller部分
     private List<BestSellerAndNewProduct> getBestSellerAndNewProductUtil(String str, Integer num) {
         List<Product> products = productService.list(new QueryWrapper<Product>().select("idProduct", "productDescription", "tenpercentoff",
-                "secondOneHalf", "href", "newPrice", "rank", "newProduct", "bigImgSrc","commentNum").eq(str, true));
+                "secondOneHalf", "href", "newPrice", "bestseller", "newProduct", "bigImgSrc","commentNum").eq(str, true));
         products.sort(new Comparator<Product>() {
             @Override
             public int compare(Product o1, Product o2) {
-                return o2.getRank() - o1.getRank();
+                return o2.getBestseller() - o1.getBestseller();
             }
         });
 //        System.out.println(products);
@@ -237,14 +237,25 @@ public class ProductController {
 
     //getRankingItems方法的工具方法
     private List<ItemRankingProduct> getRankingItemsUtil(List<String> list1, String std) {
-        List<Product> products = productService.list(new QueryWrapper<Product>()
-                .gt("rank", 0).eq(std, list1.get(0)));
-        products.sort(new Comparator<Product>() {
-            @Override
-            public int compare(Product o1, Product o2) {
-                return o2.getRank() - o1.getRank();
-            }
-        });
+        List<Product> products = productService.list(new QueryWrapper<Product>().select("productdescription","tenpercentoff"
+                ,"secondonehalf","href","bigimgsrc","newprice","secondlevelcategoryrank","firstlevelcategoryrank")
+                .eq(std, list1.get(0)));
+        if(std.equals("firstlevelcategory")){
+            products.sort(new Comparator<Product>() {
+                @Override
+                public int compare(Product o1, Product o2) {
+                    return o2.getFirstlevelcategoryrank() - o1.getFirstlevelcategoryrank();
+                }
+            });
+        }else{
+            products.sort(new Comparator<Product>() {
+                @Override
+                public int compare(Product o1, Product o2) {
+                    return o2.getSecondlevelcategoryrank() - o1.getSecondlevelcategoryrank();
+                }
+            });
+        }
+
         //把前七个放进去
         List<ItemRankingProduct> itemRankingProductList = new ArrayList<>();//存放一个请求属性的查询值
         for (int j = 0; j < products.size(); j++) {

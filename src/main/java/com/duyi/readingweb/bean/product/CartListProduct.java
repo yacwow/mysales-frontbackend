@@ -23,7 +23,7 @@ public class CartListProduct {
 
     private String productDescription;
 
-    private Boolean timesale;
+    private Integer timesale;
 
 
 }

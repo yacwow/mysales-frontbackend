@@ -14,5 +14,5 @@ public class MustBuyProduct {
     private String href;
     private String imgSrc;
     private Integer price;
-    private Boolean newProduct;
+    private Integer newProduct;
 }

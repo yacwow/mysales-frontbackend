@@ -11,10 +11,8 @@ public class Product {
     @TableId(type = IdType.AUTO)
     private Integer idproduct;
 
-    private Boolean timeseller;
-
-    private Boolean bestseller;
-
+    private Integer timeseller;
+    private Integer bestseller;
     private Integer newprice;
 
     private Integer marketprice;
@@ -25,8 +23,7 @@ public class Product {
 
     private String productdescription;
 
-    private Boolean newproduct;
-
+    private Integer newproduct;
     private Boolean secondonehalf;
 
     private String href;
@@ -39,7 +36,6 @@ public class Product {
 
     private Integer stock;
 
-    private Integer rank;
 
     private Integer soldnum;
 
@@ -54,13 +50,14 @@ public class Product {
     private Integer fraudwishlistnum;
 
     private String firstlevelcategory;
-
+    private Integer firstlevelcategoryrank;
     private String secondlevelcategory;
-
-    private Integer mustbuyrate;
+    private Integer secondlevelcategoryrank;
+//    private Integer mustbuyrate;
 
     private String bigimgsrc;
     private Integer commentnum;
     private Integer fraudcommentnum;
     private Integer fraudsoldnum;
+    private Integer purchaseprice;
 }

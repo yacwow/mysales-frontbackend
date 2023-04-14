@@ -23,8 +23,14 @@ public class TimeSellerController {
     @RequestMapping("/api/timeSeller")
     public ResultMsg getTimeSeller() {
         String[] strings = new String[]{"topGeneral", "dressGeneral", "bottomGeneral", "outerGeneral", "setUp", "generalShoes"};
-        List<Product> totalProduct = productService.list(new QueryWrapper<Product>().select("firstlevelCategory", "idproduct", "secondOneHalf", "href", "marketPrice", "newPrice", "stock", "recommend","bigimgsrc")
-                .eq("timeseller", 1));
+        List<Product> totalProduct = productService.list(new QueryWrapper<Product>().select("firstlevelCategory", "idproduct", "secondOneHalf", "href",
+                        "marketPrice", "newPrice", "stock", "recommend","bigimgsrc","timeseller").gt("timeseller", 0));
+        totalProduct.sort(new Comparator<Product>() {
+            @Override
+            public int compare(Product o1, Product o2) {
+                return o2.getTimeseller()-o1.getTimeseller();
+            }
+        });
         Map<String, Object> resMap = new HashMap<>();
         for (int i = 0; i < strings.length; i++) {
             int finalI = i;

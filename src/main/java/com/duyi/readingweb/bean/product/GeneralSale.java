@@ -16,6 +16,6 @@ public class GeneralSale {
     private Integer recommend;
     private Integer commentNum;
     private String productDescription;
-    private Boolean newProduct;
+    private Integer newProduct;
     private Integer idProduct;
 }

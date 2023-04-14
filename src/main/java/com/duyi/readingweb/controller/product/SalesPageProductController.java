@@ -87,23 +87,23 @@ public class SalesPageProductController {
             ));
         }
         SalesPageProduct salesPageProduct = new SalesPageProduct(
-                product.getIdproduct(),
-                product.getProductdetailsize(),
-                product.getProductdetaildescription(),
-                product.getNewprice(),
-                product.getMarketprice(),
-                product.getOriginprice(),
-                product.getTenpercentoff(),
-                product.getSecondonehalf(),
-                product.getProductdescription(),
-                product.getHref(),
-                product.getTimeseller(),
-                wishList,
-                product.getFirstlevelcategory(),
-                product.getSecondlevelcategory(),
-                salesPageCommentList,
-                salesPagePictureList,
-                salesPageBuyMatchList
+//                product.getIdproduct(),
+//                product.getProductdetailsize(),
+//                product.getProductdetaildescription(),
+//                product.getNewprice(),
+//                product.getMarketprice(),
+//                product.getOriginprice(),
+//                product.getTenpercentoff(),
+//                product.getSecondonehalf(),
+//                product.getProductdescription(),
+//                product.getHref(),
+//                product.getTimeseller(),
+//                wishList,
+//                product.getFirstlevelcategory(),
+//                product.getSecondlevelcategory(),
+//                salesPageCommentList,
+//                salesPagePictureList,
+//                salesPageBuyMatchList
         );
         return ResultMsg.ok().data("salesPageProduct", salesPageProduct);
     }

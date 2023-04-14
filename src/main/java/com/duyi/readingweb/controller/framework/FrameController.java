@@ -46,7 +46,7 @@ public class FrameController {
 
     @Autowired
     private PickupItemService pickupItemService;
-
+//    这里的rank不是product的rank
     @RequestMapping("/api/pickUp")
     public ResultMsg getRecommend() {
         List<Pickupitem> pickupItemList = pickupItemService.list(new QueryWrapper<Pickupitem>()
