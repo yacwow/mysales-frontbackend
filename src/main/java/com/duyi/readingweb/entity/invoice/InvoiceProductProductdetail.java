@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
 public class InvoiceProductProductdetail {
     @TableId(type= IdType.AUTO)
@@ -18,5 +20,6 @@ public class InvoiceProductProductdetail {
     private String productcolor;
 
     private String productsize;
+    private Date orderdate;
 
 }

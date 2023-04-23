@@ -32,7 +32,7 @@ public class SalesPageProduct {
     private String productdescription;
 
     private String href;
-    private Boolean timesale;
+    private Integer timesale;
     private Map<String,Object> wishList;
 
     private String firstlevelcategory;

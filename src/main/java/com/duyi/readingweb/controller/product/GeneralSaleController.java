@@ -37,31 +37,40 @@ public class GeneralSaleController {
         if (firstLevelCategory == null || firstLevelCategory.equals("")) {
             total = productService.count(new QueryWrapper<Product>().eq(orderType, 1));
             if (orderAsc.equals("asc")) {
-                products = productService.list(new QueryWrapper<Product>().select("idproduct", "newproduct", "productdescription", "newprice", "href", "tenpercentoff", "secondonehalf", "bigimgsrc", "commentnum", "recommend")
-                        .eq(orderType, 1).orderByAsc("newprice").last(stringBuilder.toString()));
+                products = productService.list(new QueryWrapper<Product>().select("idproduct", "newproduct", "productdescription",
+                                "newprice", "href", "tenpercentoff", "secondonehalf", "bigimgsrc", "commentnum", "recommend")
+                        .ge(orderType, 0).orderByAsc("newprice").last(stringBuilder.toString()));
             } else {
-                products = productService.list(new QueryWrapper<Product>().select("idproduct", "newproduct", "productdescription", "newprice", "href", "tenpercentoff", "secondonehalf", "bigimgsrc", "commentnum", "recommend")
-                        .eq(orderType, 1).orderByDesc("newprice").last(stringBuilder.toString()));
+                products = productService.list(new QueryWrapper<Product>().select("idproduct", "newproduct", "productdescription",
+                                "newprice", "href", "tenpercentoff", "secondonehalf", "bigimgsrc", "commentnum", "recommend")
+                        .ge(orderType, 0).orderByDesc("newprice").last(stringBuilder.toString()));
             }
         }//单个category的搜索
         else if (secondLevelCategory == null || secondLevelCategory.equals("")) {
-            total = productService.count(new QueryWrapper<Product>().eq("firstLevelCategory", firstLevelCategory).eq(orderType, 1));
+            total = productService.count(new QueryWrapper<Product>().eq("firstLevelCategory", firstLevelCategory).ge(orderType, 0));
             if (orderAsc.equals("asc")) {
-                products = productService.list(new QueryWrapper<Product>().select("idproduct", "newproduct", "productdescription", "newprice", "href", "tenpercentoff", "secondonehalf", "bigimgsrc", "commentnum", "recommend")
-                        .eq("firstLevelCategory", firstLevelCategory).eq(orderType, 1).orderByAsc("newprice").last(stringBuilder.toString()));
+                products = productService.list(new QueryWrapper<Product>().select("idproduct", "newproduct", "productdescription", "newprice", "href",
+                                "tenpercentoff", "secondonehalf", "bigimgsrc", "commentnum", "recommend")
+                        .eq("firstLevelCategory", firstLevelCategory).ge(orderType, 0).orderByAsc("newprice").last(stringBuilder.toString()));
             } else {
-                products = productService.list(new QueryWrapper<Product>().select("idproduct", "newproduct", "productdescription", "newprice", "href", "tenpercentoff", "secondonehalf", "bigimgsrc", "commentnum", "recommend")
-                        .eq("firstLevelCategory", firstLevelCategory).eq(orderType, 1).orderByDesc("newprice").last(stringBuilder.toString()));
+                products = productService.list(new QueryWrapper<Product>().select("idproduct", "newproduct", "productdescription", "newprice", "href",
+                                "tenpercentoff", "secondonehalf", "bigimgsrc", "commentnum", "recommend")
+                        .eq("firstLevelCategory", firstLevelCategory).ge(orderType, 0).orderByDesc("newprice").last(stringBuilder.toString()));
             }
         }//两个category的搜索
         else {
-            total = productService.count(new QueryWrapper<Product>().eq("firstLevelCategory", firstLevelCategory).eq("secondLevelCategory", secondLevelCategory).eq(orderType, 1));
+            total = productService.count(new QueryWrapper<Product>().eq("firstLevelCategory", firstLevelCategory).eq("secondLevelCategory", secondLevelCategory)
+                    .ge(orderType, 0));
             if (orderAsc.equals("asc")) {
-                products = productService.list(new QueryWrapper<Product>().select("idproduct", "newproduct", "productdescription", "newprice", "href", "tenpercentoff", "secondonehalf", "bigimgsrc", "commentnum", "recommend")
-                        .eq("firstLevelCategory", firstLevelCategory).eq("secondLevelCategory", secondLevelCategory).eq(orderType, 1).orderByAsc("newprice").last(stringBuilder.toString()));
+                products = productService.list(new QueryWrapper<Product>().select("idproduct", "newproduct", "productdescription", "newprice", "href",
+                                "tenpercentoff", "secondonehalf", "bigimgsrc", "commentnum", "recommend")
+                        .eq("firstLevelCategory", firstLevelCategory).ge("secondLevelCategory", secondLevelCategory)
+                        .ge(orderType, 0).orderByAsc("newprice").last(stringBuilder.toString()));
             } else {
-                products = productService.list(new QueryWrapper<Product>().select("idproduct", "newproduct", "productdescription", "newprice", "href", "tenpercentoff", "secondonehalf", "bigimgsrc", "commentnum", "recommend")
-                        .eq("firstLevelCategory", firstLevelCategory).eq("secondLevelCategory", secondLevelCategory).eq(orderType, 1).orderByDesc("newprice").last(stringBuilder.toString()));
+                products = productService.list(new QueryWrapper<Product>().select("idproduct", "newproduct", "productdescription", "newprice", "href", "tenpercentoff",
+                                "secondonehalf", "bigimgsrc", "commentnum", "recommend")
+                        .eq("firstLevelCategory", firstLevelCategory).ge("secondLevelCategory", secondLevelCategory)
+                        .ge(orderType, 0).orderByDesc("newprice").last(stringBuilder.toString()));
             }
         }
         List<GeneralSale> resProducts = getGeneralSaleFromProduct(products);
@@ -73,7 +82,7 @@ public class GeneralSaleController {
 
 
     @RequestMapping("api/generalQuery")
-    public ResultMsg getProduct(String param,Integer page) {
+    public ResultMsg getProduct(String param, Integer page) {
         Long total = productService.count(new QueryWrapper<Product>().like("productdescription", param));
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("limit ").append(0).append(",").append(60);
@@ -81,7 +90,7 @@ public class GeneralSaleController {
                 .like("productdescription", param).last(stringBuilder.toString()));
         List<GeneralSale> resProducts = getGeneralSaleFromProduct(products);
         Map<String, Object> map = new HashMap<>();
-        if(total>60) total=60L;
+        if (total > 60) total = 60L;
         map.put("total", total);
         map.put("product", resProducts);
         return ResultMsg.ok().data(map);

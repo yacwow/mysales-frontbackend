@@ -50,6 +50,13 @@ public class SalesPageProductController {
         }
         Product product = productService.getOne(new QueryWrapper<Product>().eq("idProduct", productId));
         List<ProductImg> productImgList = productImgService.list(new QueryWrapper<ProductImg>().eq("idProduct", productId));
+        System.out.println(productImgList);
+        System.out.println("----------------------------");
+        System.out.println("----------------------------");
+        System.out.println("----------------------------");
+        System.out.println("----------------------------");
+        System.out.println("----------------------------");
+        System.out.println("----------------------------");
         //变成salespagepicture
         List<SalesPagePicture> salesPagePictureList = new ArrayList<>();
         for (int i = 0; i < productImgList.size(); i++) {
@@ -87,23 +94,23 @@ public class SalesPageProductController {
             ));
         }
         SalesPageProduct salesPageProduct = new SalesPageProduct(
-//                product.getIdproduct(),
-//                product.getProductdetailsize(),
-//                product.getProductdetaildescription(),
-//                product.getNewprice(),
-//                product.getMarketprice(),
-//                product.getOriginprice(),
-//                product.getTenpercentoff(),
-//                product.getSecondonehalf(),
-//                product.getProductdescription(),
-//                product.getHref(),
-//                product.getTimeseller(),
-//                wishList,
-//                product.getFirstlevelcategory(),
-//                product.getSecondlevelcategory(),
-//                salesPageCommentList,
-//                salesPagePictureList,
-//                salesPageBuyMatchList
+                product.getIdproduct(),
+                product.getProductdetailsize(),
+                product.getProductdetaildescription(),
+                product.getNewprice(),
+                product.getMarketprice(),
+                product.getOriginprice(),
+                product.getTenpercentoff(),
+                product.getSecondonehalf(),
+                product.getProductdescription(),
+                product.getHref(),
+                product.getTimeseller(),
+                wishList,
+                product.getFirstlevelcategory(),
+                product.getSecondlevelcategory(),
+                salesPageCommentList,
+                salesPagePictureList,
+                salesPageBuyMatchList
         );
         return ResultMsg.ok().data("salesPageProduct", salesPageProduct);
     }

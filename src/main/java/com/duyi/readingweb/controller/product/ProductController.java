@@ -208,7 +208,7 @@ public class ProductController {
     //getBestSellerAndNewProduct方法的工具方法和getBestSellerPage的betSeller部分
     private List<BestSellerAndNewProduct> getBestSellerAndNewProductUtil(String str, Integer num) {
         List<Product> products = productService.list(new QueryWrapper<Product>().select("idProduct", "productDescription", "tenpercentoff",
-                "secondOneHalf", "href", "newPrice", "bestseller", "newProduct", "bigImgSrc","commentNum").eq(str, true));
+                "secondOneHalf", "href", "newPrice", "bestseller", "newProduct", "bigImgSrc","commentNum").gt(str, 0));
         products.sort(new Comparator<Product>() {
             @Override
             public int compare(Product o1, Product o2) {

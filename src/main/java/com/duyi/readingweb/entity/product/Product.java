@@ -60,4 +60,6 @@ public class Product {
     private Integer fraudcommentnum;
     private Integer fraudsoldnum;
     private Integer purchaseprice;
+    private String stockstatus;
+    private String editstatus;
 }

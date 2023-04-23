@@ -4,12 +4,12 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.duyi.readingweb.bean.ResultMsg;
 import com.duyi.readingweb.entity.product.UserProductCartdetail;
 import com.duyi.readingweb.entity.product.UserProductWishlist;
-import com.duyi.readingweb.entity.user.Invoice;
+import com.duyi.readingweb.entity.invoice.Invoice;
 import com.duyi.readingweb.entity.user.User;
 import com.duyi.readingweb.jwt.JwtUtil;
 import com.duyi.readingweb.service.product.UserProductCartdetailService;
 import com.duyi.readingweb.service.product.UserProductWishlistService;
-import com.duyi.readingweb.service.user.InvoiceService;
+import com.duyi.readingweb.service.invoice.InvoiceService;
 import com.duyi.readingweb.service.user.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
@@ -20,10 +20,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.util.*;
 
 @Slf4j

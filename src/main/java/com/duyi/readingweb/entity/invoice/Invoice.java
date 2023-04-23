@@ -1,4 +1,4 @@
-package com.duyi.readingweb.entity.user;
+package com.duyi.readingweb.entity.invoice;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;

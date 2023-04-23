@@ -8,7 +8,7 @@ import com.duyi.readingweb.entity.invoice.InvoiceAddress;
 import com.duyi.readingweb.entity.invoice.InvoiceProductProductdetail;
 import com.duyi.readingweb.entity.product.Product;
 import com.duyi.readingweb.entity.product.UserProductWishlist;
-import com.duyi.readingweb.entity.user.Invoice;
+import com.duyi.readingweb.entity.invoice.Invoice;
 import com.duyi.readingweb.entity.user.Pointhistory;
 import com.duyi.readingweb.entity.user.User;
 import com.duyi.readingweb.service.couponlist.CouponlistService;
@@ -16,7 +16,7 @@ import com.duyi.readingweb.service.invoice.InvoiceAddressService;
 import com.duyi.readingweb.service.invoice.InvoiceProductProductdetailService;
 import com.duyi.readingweb.service.product.ProductService;
 import com.duyi.readingweb.service.product.UserProductWishlistService;
-import com.duyi.readingweb.service.user.InvoiceService;
+import com.duyi.readingweb.service.invoice.InvoiceService;
 import com.duyi.readingweb.service.user.PointhistoryService;
 import com.duyi.readingweb.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
-import java.util.function.Predicate;
 
 @RestController
 public class AccountDetailController {

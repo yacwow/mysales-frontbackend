@@ -3,14 +3,12 @@ package com.duyi.readingweb.controller.user;
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.duyi.readingweb.bean.ResultMsg;
-import com.duyi.readingweb.bean.product.CartListProduct;
 import com.duyi.readingweb.bean.product.user.UserDetail;
 import com.duyi.readingweb.entity.couponlist.Couponlist;
 import com.duyi.readingweb.entity.invoice.InvoiceProductProductdetail;
-import com.duyi.readingweb.entity.invoice.PaymentinfoCustomerside;
 import com.duyi.readingweb.entity.product.Product;
 import com.duyi.readingweb.entity.product.UserProductCartdetail;
-import com.duyi.readingweb.entity.user.Invoice;
+import com.duyi.readingweb.entity.invoice.Invoice;
 import com.duyi.readingweb.entity.user.User;
 import com.duyi.readingweb.entity.invoice.InvoiceAddress;
 import com.duyi.readingweb.service.couponlist.CouponlistService;
@@ -18,7 +16,7 @@ import com.duyi.readingweb.service.invoice.InvoiceProductProductdetailService;
 import com.duyi.readingweb.service.invoice.PaymentinfoCustomersideService;
 import com.duyi.readingweb.service.product.ProductService;
 import com.duyi.readingweb.service.product.UserProductCartdetailService;
-import com.duyi.readingweb.service.user.InvoiceService;
+import com.duyi.readingweb.service.invoice.InvoiceService;
 import com.duyi.readingweb.service.invoice.InvoiceAddressService;
 import com.duyi.readingweb.service.user.UserService;
 import org.joda.time.DateTime;
@@ -97,6 +95,7 @@ public class CheckOutController {
     private ResultMsg createInvoice(@RequestParam Map<String, Object> params, HttpServletRequest request) {
         String email = (String) request.getAttribute("email");
         Map<String, Object> userinfo = (Map<String, Object>) JSON.parse((String) params.get("userInfo"));
+        System.out.println(userinfo);
         Boolean needUpdateAddress = (Boolean) JSON.parse((String) params.get("needUpdateAddress"));
         System.out.println(needUpdateAddress);
         String updateEmail = (String) userinfo.get("email");
@@ -107,8 +106,9 @@ public class CheckOutController {
         String updatecountry = (String) userinfo.get("country");
         String updateprovince = (String) userinfo.get("province");
         String updatecity = (String) userinfo.get("city");
-        String updatearea = (String) userinfo.get("address");
-        Integer postcode = Integer.valueOf((String) userinfo.get("postcode"));
+        String updatearea = (String) userinfo.get("area");
+        System.out.println(userinfo.get("postcode"));
+        Integer postcode =  (Integer)userinfo.get("postcode");
         //把用户的信息存入到用户使用地址表里面（跟用户实际地址可以完全不同）,根据前端传入的是否需要更新
         if (needUpdateAddress) {
             InvoiceAddress invoiceAddress = new InvoiceAddress();
@@ -299,6 +299,14 @@ public class CheckOutController {
         invoice.setPostcode(postcode);
         System.out.println(invoice.getInvoiceid());
         System.out.println(productInfo + "productInfo");
+        System.out.println("------------------------------");
+        System.out.println("------------------------------");
+        System.out.println("------------------------------");
+        System.out.println("------------------------------");
+        System.out.println("------------------------------");
+        System.out.println("------------------------------");
+        System.out.println("------------------------------");
+        System.out.println(invoice);
         Boolean successSave = invoiceService.save(invoice);
         //用这个invoiceid来创建一个invoice包含的货物数量，大小，颜色表invoice_productdetail表（多对多表）
         Integer invoiceId = invoice.getInvoiceid();
@@ -311,6 +319,7 @@ public class CheckOutController {
                 invoiceProductProductdetail.setProductidProductdetail((Integer) productInfo.get(i).get("pid"));
                 invoiceProductProductdetail.setProductcolor((String) productInfo.get(i).get("color"));
                 invoiceProductProductdetail.setProductsize((String) productInfo.get(i).get("size"));
+                invoiceProductProductdetail.setOrderdate(dateTime);
                 invoiceProductProductdetailService.save(invoiceProductProductdetail);
             }
         }

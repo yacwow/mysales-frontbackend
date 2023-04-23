@@ -107,6 +107,7 @@ public class CartShoppingController {
             cartListProduct.setAmount(userProductCartdetails.get(i).getProductamount());
             cartListProduct.setColor(userProductCartdetails.get(i).getProductcolor());
             cartListProduct.setSize(userProductCartdetails.get(i).getProductsize());
+
             cartListProduct.setHref(product.getHref());
             cartListProduct.setImgSrc(product.getBigimgsrc());
             cartListProduct.setPrice(product.getNewprice());
