@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class DailyNewProduct {
     private String productDescription;
-    private Boolean discount;
-    private Boolean secondOneHalf;
+    private Integer discount;
+    private Integer secondOneHalf;
     private String href;
     private String imgSrc;
     private Integer price;

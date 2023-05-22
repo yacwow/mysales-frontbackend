@@ -16,6 +16,7 @@ public class InvoiceAddress {
     private String firstname;
     private String lastname;
     private String mobilephone;
+    private String phone;
     private String country;
 
     private String province;

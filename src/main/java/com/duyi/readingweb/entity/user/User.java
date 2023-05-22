@@ -40,4 +40,7 @@ public class User {
     private String token;
     @TableField(fill = FieldFill.UPDATE)
     private LocalDateTime tokencreationdate;
+
+    private Boolean advertise;
+    private String level;
 }

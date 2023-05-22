@@ -21,5 +21,6 @@ public class InvoiceProductProductdetail {
 
     private String productsize;
     private Date orderdate;
+    private String imgsrc;
 
 }

@@ -12,9 +12,9 @@ import java.util.List;
 @NoArgsConstructor
 public class OneThousandDiscountProduct {
     private Integer newprice;
-    private Boolean discount;
+    private Integer discount;
 
-    private Boolean secondonehalf;
+    private Integer secondonehalf;
     private String href;
     private Integer stockNum;
     private List<OneThousandDiscountPicture> salesPagePictures;

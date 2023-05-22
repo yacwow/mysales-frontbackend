@@ -3,6 +3,8 @@ package com.duyi.readingweb.entity.framework;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
 public class Pickupitem {
     @TableId
@@ -12,7 +14,7 @@ public class Pickupitem {
 
     private String imgSrc;
 
-    private Long expireTime;
+    private Date expireTime;
 
     private String intro;
     private Integer rank;

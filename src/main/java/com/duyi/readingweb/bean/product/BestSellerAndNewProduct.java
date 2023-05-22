@@ -9,13 +9,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class BestSellerAndNewProduct {
     private String productDescription;
-    private Boolean discount;
-    private Boolean secondOneHalf;
+    private Integer discount;
+    private Integer secondOneHalf;
     private String href;
     private String imgSrc;
     private Integer price;
     private Integer commentNumber;
     private Integer newProduct;
-
 
 }

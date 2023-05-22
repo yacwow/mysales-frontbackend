@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserDetail {
-
     private String detailAddress;
 
     private String country;
@@ -21,6 +20,7 @@ public class UserDetail {
 
     private Integer postcode;
     private String mobilePhone;
+    private String phone;
     private String firstName;
     private String lastName;
     private String email;//这个是invoice特有的email，存入的时候因为是验证了，所以有user自己的email

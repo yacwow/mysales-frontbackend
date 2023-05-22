@@ -19,7 +19,7 @@ public class JwtUtil {
     private static final String SECRET = "my_secret";
 
     //    过期时间
-    private static final Long EXPIRATION = 1800000L;
+    private static final Long EXPIRATION = 180000000L;
 
     //    生成token
     public static String createToken(User user) {
@@ -29,11 +29,13 @@ public class JwtUtil {
         map.put("typ", "jwt");//头部信息
 //        System.out.println(user.getFirstname());
 //        System.out.println( user.getEmail());
+        System.out.println(user);
         String token = JWT.create()
                 .withHeader(map)
 //                .withClaim("id", user.getUserid())
-                .withClaim("name", user.getFirstname()+","+user.getLastname())
+                .withClaim("name", user.getLastname()+","+user.getFirstname())
                 .withClaim("email", user.getEmail())
+                .withClaim("deduction",user.getDeduction())
                 .withExpiresAt(expireDate)
                 .withIssuedAt(new Date())
                 .sign(Algorithm.HMAC256(SECRET));

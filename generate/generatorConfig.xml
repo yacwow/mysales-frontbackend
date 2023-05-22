@@ -18,6 +18,6 @@
 
 <!--        <javaClientGenerator type="ANNOTATEDMAPPER" targetPackage="example.mapper" targetProject="src/main/java"/>-->
 
-        <table tableName="pointhistory" />
+        <table tableName="user_visited_product" />
     </context>
 </generatorConfiguration>

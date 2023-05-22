@@ -8,8 +8,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SalesPageBuyMatch {
-    private Boolean discount;
-    private Boolean secondOneHalf;
+    private Integer discount;
+    private Integer secondOneHalf;
     private String href;
     private String imgSrc;
     private Integer price;

@@ -10,9 +10,10 @@ import lombok.NoArgsConstructor;
 public class ItemRankingProduct {
     private String productDescription;
     private Integer rank;
-    private Boolean discount;
-    private Boolean secondOneHalf;
+    private Integer discount;
+    private Integer secondOneHalf;
     private String href;
     private String imgSrc;
     private Integer price;
+    private Integer fraudCommentNum;
 }

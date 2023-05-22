@@ -19,7 +19,7 @@ public class CartListProduct {
     private String imgSrc;
     private Integer price;
 
-    private Boolean secondOneHalf;
+    private Integer secondOneHalf;
 
     private String productDescription;
 

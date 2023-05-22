@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -67,11 +68,12 @@ public class LoginController {
     @RequestMapping(value = "/api/register", method = {RequestMethod.GET, RequestMethod.POST})
     public ResultMsg register(@RequestParam Map<String, String> params) {
         String email = params.get("email");
+
+        List<User> list = userService.list(new QueryWrapper<User>().eq("email", email));
+        if (list.size() > 0) return ResultMsg.error().message("invalid email");
         String firstName = params.get("firstName");
         String password = DigestUtils.md5DigestAsHex(params.get("password").getBytes());
         String lastName = params.get("lastName");
-        List<User> list = userService.list(new QueryWrapper<User>().eq("email", email));
-        if (list.size() > 0) return ResultMsg.error().message("invalid email");
         User user = new User();
         user.setEmail(email);
         user.setFirstname(firstName);
@@ -79,6 +81,8 @@ public class LoginController {
         user.setUpassword(password);
         user.setLastlogin(DateTime.now().toDate());
         user.setDeduction(1000);
+        user.setAdvertise(false);
+        user.setLevel("VIP1");
         try {
             userService.save(user);
             String token = JwtUtil.createToken(user);
@@ -90,14 +94,35 @@ public class LoginController {
     }
 
     @RequestMapping("/api/secure/getUserInfo")
-    public ResultMsg login(HttpServletRequest request, HttpServletResponse response) {
+    public ResultMsg login(HttpServletRequest request) {
         String userName = request.getAttribute("name").toString();
         String email = request.getAttribute("email").toString();
         String token = request.getAttribute("token").toString();
+        String deduction = request.getAttribute("deduction").toString();
+        //获取一个该用户喜欢的所有的productid的list
+        List<UserProductWishlist> userProductWishlistList = userProductWishlistService
+                .list(new QueryWrapper<UserProductWishlist>()
+                        .eq("useremail", email).select("productid"));
+        List<Integer> productIdList = userProductWishlistList.stream()
+                .map(UserProductWishlist::getProductid)
+                .collect(Collectors.toList());
         Map<String, Object> map = new HashMap<>();
+        //有多少件在cartlist里面
+        List<UserProductCartdetail> userProductCartdetailList = userProductCartdetailService.list(new QueryWrapper<UserProductCartdetail>()
+                .eq("useremail", email).select("productAmount"));
+        Integer cartNum = userProductCartdetailList.stream().mapToInt(userProductCartdetail -> userProductCartdetail.getProductamount()).sum();
+        Integer wishNum = (int) userProductWishlistService.count(new QueryWrapper<UserProductWishlist>()
+                .eq("useremail", email));
+        User user = userService.getOne(new QueryWrapper<User>().eq("email", email));
+        Integer invoiceNum = (int) invoiceService.count(new QueryWrapper<Invoice>().eq("userid", user.getUserid()));
         map.put("userName", userName);
         map.put("email", email);
         map.put("token", token);
+        map.put("deduction", deduction);
+        map.put("userFavoriate", productIdList);
+        map.put("cartNum", cartNum);
+        map.put("wishNum", wishNum);
+        map.put("invoiceNum", invoiceNum);
         return ResultMsg.ok().result(true).data("data", map);
     }
 

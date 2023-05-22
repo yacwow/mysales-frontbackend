@@ -25,13 +25,15 @@ public class SalesPageProduct {
 
     private Integer originprice;
 
-    private Boolean discount;
+    private Integer discount;
 
-    private Boolean secondonehalf;
+    private Integer secondonehalf;
 
     private String productdescription;
 
     private String href;
+    private Integer soldNum;
+    private Integer wishListNum;
     private Integer timesale;
     private Map<String,Object> wishList;
 

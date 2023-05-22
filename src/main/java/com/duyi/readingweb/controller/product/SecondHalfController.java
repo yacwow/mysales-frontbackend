@@ -37,7 +37,7 @@ public class SecondHalfController {
             Map<String, Object> secondHalfPage=new HashMap<>();
             secondHalfPage.put("imgSrc",productList.get(i).getBigimgsrc());
             secondHalfPage.put("href",productList.get(i).getHref());
-            secondHalfPage.put("discount",productList.get(i).getTenpercentoff());
+            secondHalfPage.put("discount",productList.get(i).getTenpercentoff()==0?0:1);
             secondHalfPage.put("currentPrice",productList.get(i).getNewprice());
             secondHalfPage.put("originPrice",productList.get(i).getOriginprice());
             secondHalfPage.put("stockNum",productList.get(i).getStock());

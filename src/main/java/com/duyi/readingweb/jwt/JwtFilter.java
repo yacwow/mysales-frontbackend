@@ -18,42 +18,6 @@ import java.util.Map;
 @Slf4j
 @WebFilter(filterName = "JwtFilter", urlPatterns = "/api/secure/*")
 public class JwtFilter implements Filter {
-//    @Override
-//    public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException, ServletException {
-////        System.out.println("in filter");
-//        final HttpServletRequest request=(HttpServletRequest)req;
-//        final HttpServletResponse response = (HttpServletResponse) resp;
-//
-//        response.setCharacterEncoding("UTF-8");
-//        final String token=request.getHeader("authorization");
-////        System.out.println(111111);
-//        if("OPTIONS".equals(request.getMethod())){
-//            response.setStatus(HttpServletResponse.SC_OK);
-//            chain.doFilter(request,response);
-//        }else{
-////            System.out.println(2);
-//            if(token==null){
-//                response.getWriter().write("no token");
-//                return;
-//            }
-////            System.out.println(2);
-//            Map<String, Claim> userData=JwtUtil.verifyToken(token);
-////            System.out.println(userData);
-//            if(userData==null){
-//                response.getWriter().write("not vailid token");
-//                return;
-//            }
-////            System.out.println(3);
-//            Integer id= userData.get("id").asInt();
-//            String name=userData.get("name").asString();
-//            String password=userData.get("password").asString();
-//            request.setAttribute("id",id);
-//            request.setAttribute("name",name);
-//            request.setAttribute("password",password);
-//            chain.doFilter(request,response);
-//        }
-//    }
-
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         final HttpServletRequest request = (HttpServletRequest) servletRequest;
@@ -87,12 +51,24 @@ public class JwtFilter implements Filter {
 //            Integer id= userData.get("id").asInt();
             String name;
             String email;
+            Integer deduction;
+            System.out.println(userData.get("name"));
+            System.out.println(userData.get("email"));
+            System.out.println(userData.get("deduction"));
             try {
                 name = userData.get("name").asString();
                 email = userData.get("email").asString();
+                deduction = userData.get("deduction").asInt();
+                System.out.println(deduction);
+                System.out.println("--------------------");
+                System.out.println("--------------------");
+                System.out.println("--------------------");
+                System.out.println("--------------------");
+                System.out.println("--------------------");
                 request.setAttribute("name", name);
                 request.setAttribute("email", email);
                 request.setAttribute("token",token);
+                request.setAttribute("deduction",deduction);
                 filterChain.doFilter(request, response);
             } catch (Exception e) {
                 response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
@@ -106,3 +82,4 @@ public class JwtFilter implements Filter {
         }
     }
 }
+

@@ -13,7 +13,7 @@ public class LuckyBag {
     private Integer price;
     private String title;
     private Integer productId;
-    private Boolean secondHalf;
+    private Integer secondHalf;
     private String size;
     private String color;
     private Integer amount;

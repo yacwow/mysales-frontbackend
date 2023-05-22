@@ -5,11 +5,13 @@ import com.duyi.readingweb.bean.ResultMsg;
 import com.duyi.readingweb.bean.product.CartListProduct;
 import com.duyi.readingweb.bean.product.LuckyBag;
 import com.duyi.readingweb.entity.couponlist.Couponlist;
+import com.duyi.readingweb.entity.eventManagement.SpecialEventDetail;
 import com.duyi.readingweb.entity.invoice.PaymentinfoCustomerside;
 import com.duyi.readingweb.entity.product.Product;
 import com.duyi.readingweb.entity.product.UserProductCartdetail;
 import com.duyi.readingweb.entity.user.User;
 import com.duyi.readingweb.service.couponlist.CouponlistService;
+import com.duyi.readingweb.service.eventManagement.SpecialEventDetailService;
 import com.duyi.readingweb.service.invoice.PaymentinfoCustomersideService;
 import com.duyi.readingweb.service.product.ProductService;
 import com.duyi.readingweb.service.product.UserProductCartdetailService;
@@ -28,6 +30,7 @@ import java.util.*;
 
 @RestController
 public class CartShoppingController {
+
     @Autowired
     private CouponlistService couponlistService;
     @Autowired
@@ -95,15 +98,23 @@ public class CartShoppingController {
         return ResultMsg.ok().result(true).data("data", map);
     }
 
+    @Autowired
+    private SpecialEventDetailService specialEventDetailService;
 
     @RequestMapping("/api/secure/getCartListInfo")
     private ResultMsg getCartListInfo(HttpServletRequest request) {
         String email = (String) request.getAttribute("email");
-        List<UserProductCartdetail> userProductCartdetails = userProductCartdetailService.list(new QueryWrapper<UserProductCartdetail>().eq("useremail", email));
+        List<UserProductCartdetail> userProductCartdetails = userProductCartdetailService
+                .list(new QueryWrapper<UserProductCartdetail>().eq("useremail", email));
         List<CartListProduct> cartListProductList = new ArrayList<>();
         for (int i = 0; i < userProductCartdetails.size(); i++) {
             CartListProduct cartListProduct = new CartListProduct();
-            Product product = productService.getOne(new QueryWrapper<Product>().eq("idproduct", userProductCartdetails.get(i).getProductidCart()));
+            Product product = productService.getOne(new QueryWrapper<Product>()
+                    .select("href", "bigimgsrc", "newprice", "idproduct", "secondonehalf", "productdescription")
+                    .eq("idproduct", userProductCartdetails.get(i).getProductidCart()));
+            SpecialEventDetail specialEventDetail = specialEventDetailService.getOne(new QueryWrapper<SpecialEventDetail>()
+                    .select("productid").eq("specialcode", "timeseller")
+                    .eq("productid", product.getIdproduct()));
             cartListProduct.setAmount(userProductCartdetails.get(i).getProductamount());
             cartListProduct.setColor(userProductCartdetails.get(i).getProductcolor());
             cartListProduct.setSize(userProductCartdetails.get(i).getProductsize());
@@ -114,7 +125,12 @@ public class CartShoppingController {
             cartListProduct.setProductId(product.getIdproduct());
             cartListProduct.setSecondOneHalf(product.getSecondonehalf());
             cartListProduct.setProductDescription(product.getProductdescription());
-            cartListProduct.setTimesale(product.getTimeseller());
+            if (specialEventDetail != null) {
+                cartListProduct.setTimesale(1);
+            } else {
+                cartListProduct.setTimesale(0);
+            }
+
             cartListProductList.add(cartListProduct);
         }
 
@@ -159,5 +175,40 @@ public class CartShoppingController {
         return ResultMsg.ok().result(thisTime);
     }
 
+//    @RequestMapping("/api/secure/getCartInfoForMobile")
+//    private ResultMsg getCartInfoForMobile(HttpServletRequest request) {
+//        String email = (String) request.getAttribute("email");
+//        //跟pc端不一样，我全部都在这里计算，计算完了直接给数据传递回去，每次增减也是这样
+//        List<UserProductCartdetail> userProductCartdetails = userProductCartdetailService
+//                .list(new QueryWrapper<UserProductCartdetail>().eq("useremail", email));
+//        List<CartListProduct> cartListProductList = new ArrayList<>();
+//        for (int i = 0; i < userProductCartdetails.size(); i++) {
+//            CartListProduct cartListProduct = new CartListProduct();
+//            Product product = productService.getOne(new QueryWrapper<Product>()
+//                    .select("href", "bigimgsrc", "newprice", "idproduct", "secondonehalf", "productdescription")
+//                    .eq("idproduct", userProductCartdetails.get(i).getProductidCart()));
+//            SpecialEventDetail specialEventDetail = specialEventDetailService.getOne(new QueryWrapper<SpecialEventDetail>()
+//                    .select("productid").eq("specialcode", "timeseller")
+//                    .eq("productid", product.getIdproduct()));
+//            cartListProduct.setAmount(userProductCartdetails.get(i).getProductamount());
+//            cartListProduct.setColor(userProductCartdetails.get(i).getProductcolor());
+//            cartListProduct.setSize(userProductCartdetails.get(i).getProductsize());
+//
+//            cartListProduct.setHref(product.getHref());
+//            cartListProduct.setImgSrc(product.getBigimgsrc());
+//            cartListProduct.setPrice(product.getNewprice());
+//            cartListProduct.setProductId(product.getIdproduct());
+//            cartListProduct.setSecondOneHalf(product.getSecondonehalf());
+//            cartListProduct.setProductDescription(product.getProductdescription());
+//            if (specialEventDetail != null) {
+//                cartListProduct.setTimesale(1);
+//            } else {
+//                cartListProduct.setTimesale(0);
+//            }
+//
+//            cartListProductList.add(cartListProduct);
+//        }
+//        return null;
+//    }
 
 }

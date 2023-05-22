@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TimeSeller {
-    private Boolean secondOneHalf;
+    private Integer secondOneHalf;
     private String href;
     private String imgSrc;
     private Integer marketPrice;

@@ -58,4 +58,6 @@ public class Invoice {
 
     private Integer postcode;
 
+    private String cancelreason;
+
 }
