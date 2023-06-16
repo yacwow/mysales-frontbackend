@@ -27,15 +27,17 @@ public class JwtUtil {
         Map<String, Object> map = new HashMap<>();
         map.put("alg", "HS256");
         map.put("typ", "jwt");//头部信息
-//        System.out.println(user.getFirstname());
-//        System.out.println( user.getEmail());
         System.out.println(user);
+        String lastName=user.getLastname();
+        String firstName=user.getFirstname();
+        String email=user.getEmail();
+        Integer deduction=user.getDeduction();
         String token = JWT.create()
                 .withHeader(map)
 //                .withClaim("id", user.getUserid())
-                .withClaim("name", user.getLastname()+","+user.getFirstname())
-                .withClaim("email", user.getEmail())
-                .withClaim("deduction",user.getDeduction())
+                .withClaim("name", lastName+","+firstName)
+                .withClaim("email", email)
+                .withClaim("deduction",deduction)
                 .withExpiresAt(expireDate)
                 .withIssuedAt(new Date())
                 .sign(Algorithm.HMAC256(SECRET));

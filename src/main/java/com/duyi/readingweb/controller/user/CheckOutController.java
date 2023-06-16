@@ -11,6 +11,7 @@ import com.duyi.readingweb.entity.invoice.InvoiceProductProductdetail;
 import com.duyi.readingweb.entity.product.Product;
 import com.duyi.readingweb.entity.product.UserProductCartdetail;
 import com.duyi.readingweb.entity.invoice.Invoice;
+import com.duyi.readingweb.entity.user.BadInvoice;
 import com.duyi.readingweb.entity.user.User;
 import com.duyi.readingweb.entity.invoice.InvoiceAddress;
 import com.duyi.readingweb.service.couponlist.CouponlistService;
@@ -20,6 +21,7 @@ import com.duyi.readingweb.service.product.ProductService;
 import com.duyi.readingweb.service.product.UserProductCartdetailService;
 import com.duyi.readingweb.service.invoice.InvoiceService;
 import com.duyi.readingweb.service.invoice.InvoiceAddressService;
+import com.duyi.readingweb.service.user.BadInvoiceService;
 import com.duyi.readingweb.service.user.UserService;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.Executors;
 
 @RestController
 @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST})
@@ -48,6 +51,8 @@ public class CheckOutController {
     private InvoiceProductProductdetailService invoiceProductProductdetailService;
     @Autowired
     private PaymentinfoCustomersideService paymentinfoCustomersideService;
+    @Autowired
+    private BadInvoiceService badInvoiceService;
 
     //user的快递地址，和本人地址还不太一样
     @RequestMapping("/api/secure/checkOut")
@@ -163,12 +168,12 @@ public class CheckOutController {
         Integer countNum = 0;
         Integer total = 0;
         Integer secondHalfDiscount = 0;
-        Integer luckBag = 0;
+        Integer unCheckedLuckBag = 0;
         List<Map<String, Object>> productInfo = (List<Map<String, Object>>) updatedInfo.get("productInfo");
         for (int i = 0; i < productInfo.size(); i++) {
             Integer pid = (Integer) productInfo.get(i).get("pid");
             if (pid == 8888888) {
-                luckBag++;
+                unCheckedLuckBag++;
                 countNum++;
                 continue;
             }
@@ -185,7 +190,8 @@ public class CheckOutController {
         //1.2然后判断paymentdetail里面有没有discount和timelydiscount，如果有就要去搜couponlist
         Integer discount = 0;
         if (uncheckedDiscount > 0) {
-            List<Couponlist> couponlists = couponlistService.list(new QueryWrapper<Couponlist>().eq("whocanapply", 1));
+            List<Couponlist> couponlists = couponlistService.list(new QueryWrapper<Couponlist>()
+                    .eq("whocanapply", 1));
             couponlists.sort(new Comparator<Couponlist>() {
                 @Override
                 public int compare(Couponlist o1, Couponlist o2) {
@@ -204,6 +210,7 @@ public class CheckOutController {
                 discount = couponlists.get(i - 1).getDiscountamount();
             }
         }
+
 
         Integer timelyDiscount = 0;
         if (uncheckedTimelyDiscount > 0) {
@@ -228,11 +235,20 @@ public class CheckOutController {
             }
         }
 
+        //如果timelyDiscount更大，意味着客户选了小的，那我们就给小的数额
+        if (timelyDiscount > uncheckedTimelyDiscount) {
+            timelyDiscount = uncheckedTimelyDiscount;
+        }
         //1.3传入的uncheckedUsedPoint 如果大于0，判断是不是大于我们的允许值
         Integer usedPoint = 0;
-        User user = userService.getOne(new QueryWrapper<User>().eq("email", email).select("deduction", "userid"));
+        User user = userService.getOne(new QueryWrapper<User>().eq("email", email)
+                .select("deduction", "userid"));
         if (uncheckedUsedPoint > 0) {
-            usedPoint = Math.min(user.getDeduction() + (int) Math.floor(total / 20), uncheckedUsedPoint);
+            //不能大于总值的5% 或者总的deduction
+            usedPoint = Math.min(user.getDeduction(), (int) Math.floor(total / 20));
+        }
+        if (usedPoint > uncheckedUsedPoint) {
+            usedPoint = uncheckedUsedPoint;
         }
 
         //1.4然后判断paymentdetail里面有没有deliveryamount来做一次判断 折扣后价格大于9999
@@ -263,6 +279,7 @@ public class CheckOutController {
         } else if (paymentBeforeDeliveryFee >= 30000) {
             trueLuckyBag = 3;
         }
+
         //1.6 getPoint不用验证，他传入再大都无所谓，我只算我的
         Integer getPoint = (int) Math.floor(total / 20);
         //1.7总数
@@ -280,10 +297,7 @@ public class CheckOutController {
         System.out.println(getPoint + "getPoint");
         System.out.println(paymentDetail);
         System.out.println(paymentAmount + "paymentAmount");
-        //1.8是时候进入判断阶段了，如果判断有问题，但是总数大于30000并差距在10000以内就先放行。但是我们要放入数据库每天都查看
-        //现在先不做这个
         //2注入一个invoice并获取invoice的id，
-
         Invoice invoice = new Invoice();
         Date dateTime = new DateTime().toDate();
         System.out.println(dateTime);
@@ -339,13 +353,70 @@ public class CheckOutController {
                 invoiceProductProductdetailService.save(invoiceProductProductdetail);
             }
         }
+        //是时候进入判断阶段了，把invoiceid和其他的数据放入一张表，先放行。但是我们要放入数据库每天都查看
+        //下面这些都是有问题的
+        Boolean flag = false;
+        BadInvoice badInvoice = new BadInvoice();
+        if (deliveryAmount > uncheckedDeliveryAmount) {
+            flag = true;
+            badInvoice.setDeliveryAmount(deliveryAmount);
+            badInvoice.setUncheckedDeliveryAmount(uncheckedDeliveryAmount);
+        }
+        if (unCheckedLuckBag > trueLuckyBag) {
+            flag = true;
+            badInvoice.setUncheckedLuckBag(unCheckedLuckBag);
+            badInvoice.setLuckBag(trueLuckyBag);
+        }
+        if (countNum < uncheckedCountNum) {
+            flag = true;
+            badInvoice.setCountNum(countNum);
+            badInvoice.setUncheckedCountNum(uncheckedCountNum);
+        }
+        if (getPoint < uncheckedGetPoint) {
+            flag = true;
+            badInvoice.setGetPoint(getPoint);
+            badInvoice.setUncheckedGetPoint(uncheckedGetPoint);
+        }
+        if (total < uncheckedTotal) {
+            flag = true;
+            badInvoice.setTotal(total);
+            badInvoice.setUncheckedTotal(uncheckedTotal);
+        }
+        if (secondHalfDiscount < uncheckedSecondHalfDiscount) {
+            flag = true;
+            badInvoice.setSecondHalfDiscount(secondHalfDiscount);
+            badInvoice.setUncheckedSecondHalfDiscount(uncheckedSecondHalfDiscount);
+        }
+        if (paymentAmount > uncheckedPaymentAmount) {
+            flag = true;
+            badInvoice.setPaymentAmount(paymentAmount);
+            badInvoice.setUncheckedPaymentAmount(uncheckedPaymentAmount);
+        }
+        if (timelyDiscount < uncheckedTimelyDiscount) {
+            flag = true;
+            badInvoice.setTimelyDiscount(timelyDiscount);
+            badInvoice.setUncheckedTimelyDiscount(uncheckedTimelyDiscount);
+        }
+        if (discount < uncheckedDiscount) {
+            flag = true;
+            badInvoice.setDiscount(discount);
+            badInvoice.setUncheckedDiscount(uncheckedDiscount);
+        }
+        if (flag) {
+            badInvoice.setActive(true);
+            badInvoice.setAuthor("system");
+            badInvoiceService.save(badInvoice);
+        }
         //把该用户的user-product-cartlist给删掉，没用了
         userProductCartdetailService.remove(new QueryWrapper<UserProductCartdetail>().eq("useremail", email));
-
+        //先扣掉这部分的折扣点数
+        userService.update(new UpdateWrapper<User>().eq("email", email)
+                .set("deduction", user.getDeduction() - usedPoint));
         //返回invoiceid，价格    跳转到具体的收款页面，目前代收应该是同一个页面
         Map<String, Object> map = new HashMap<>();
         map.put("invoiceId", invoiceId);
         map.put("amount", paymentAmount);
+        map.put("newDeduct",user.getDeduction()-usedPoint);
         return ResultMsg.ok().result(true).data(map);
 
     }
@@ -386,7 +457,7 @@ public class CheckOutController {
         System.out.println(invoiceId > 0);
         if (invoiceId > 0) {
             //这是修改，根据iduser_address
-            flag = invoiceAddressService.update(invoiceAddress,new QueryWrapper<InvoiceAddress>().eq("iduser_address",invoiceId));
+            flag = invoiceAddressService.update(invoiceAddress, new QueryWrapper<InvoiceAddress>().eq("iduser_address", invoiceId));
         } else {
             flag = invoiceAddressService.save(invoiceAddress);
         }

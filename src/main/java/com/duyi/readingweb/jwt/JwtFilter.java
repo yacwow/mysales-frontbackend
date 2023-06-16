@@ -36,9 +36,8 @@ public class JwtFilter implements Filter {
                 response.getWriter().write(JSON.toJSONString(map));
                 return;
             }
-//            System.out.println(2);
+            System.out.println(2);
             Map<String, Claim> userData = JwtUtil.verifyToken(token);
-//            System.out.println(userData);
             if (userData == null) {
                 Map<String,Object> map=new HashMap<>();
                 map.put("result",false);
@@ -47,8 +46,9 @@ public class JwtFilter implements Filter {
             }
 //            System.out.println(userData.get("name"));
 //            System.out.println(userData.get("email"));
-//            System.out.println(3);
+            System.out.println(3);
 //            Integer id= userData.get("id").asInt();
+            System.out.println(userData);
             String name;
             String email;
             Integer deduction;
@@ -59,6 +59,7 @@ public class JwtFilter implements Filter {
                 name = userData.get("name").asString();
                 email = userData.get("email").asString();
                 deduction = userData.get("deduction").asInt();
+                System.out.println(name);
                 System.out.println(deduction);
                 System.out.println("--------------------");
                 System.out.println("--------------------");
@@ -71,13 +72,10 @@ public class JwtFilter implements Filter {
                 request.setAttribute("deduction",deduction);
                 filterChain.doFilter(request, response);
             } catch (Exception e) {
-                response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
-                response.getWriter().write("not vailid token");
+                Map<String,Object> map=new HashMap<>();
+                map.put("result",false);
+                response.getWriter().write(JSON.toJSONString(map));
             }
-
-//            request.setAttribute("id",id);
-
-//            System.out.println("in33333");
 
         }
     }

@@ -29,7 +29,7 @@ private SpecialEventDetailService specialEventDetailService;
     @RequestMapping("/api/discount")
     public ResultMsg getProducts() {
         Random random = new Random();
-        Integer a = random.nextInt(8, 15)*4;
+        Integer a = random.nextInt(15, 20)*4;
         List<SpecialEventDetail> specialEventDetailList=specialEventDetailService.list(new QueryWrapper<SpecialEventDetail>()
                 .eq("specialcode","discount").orderByDesc("categoryRankNum").last("limit 0" + a));
         List<Integer> productIDList = specialEventDetailList.stream()

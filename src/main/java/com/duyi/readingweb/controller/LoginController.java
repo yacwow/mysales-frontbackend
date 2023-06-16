@@ -11,6 +11,7 @@ import com.duyi.readingweb.service.product.UserProductCartdetailService;
 import com.duyi.readingweb.service.product.UserProductWishlistService;
 import com.duyi.readingweb.service.invoice.InvoiceService;
 import com.duyi.readingweb.service.user.UserService;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,10 +33,7 @@ public class LoginController {
 
     @RequestMapping(value = "/api/login", method = {RequestMethod.GET, RequestMethod.POST})
     public ResultMsg login(@RequestParam Map<String, Object> params, HttpServletRequest request) {
-
         System.out.println(params);
-
-
         String email = (String) params.get("email");
 //        String password = (String) params.get("params[password]");
         String password = DigestUtils.md5DigestAsHex(((String) params.get("password")).getBytes());
@@ -43,13 +41,17 @@ public class LoginController {
         System.out.println(params.get("password"));
 
         User user = userService.getOne(new QueryWrapper<User>().eq("email", email));
+        System.out.println(user);
+        System.out.println("--------------");
+        System.out.println("--------------");
+        System.out.println("--------------");
         if (user != null && user.getUpassword() != null && user.getUpassword().equals(password)) {
             String token = JwtUtil.createToken(user);
             user.setLastlogin(DateTime.now().toDate());
             userService.update(user, new QueryWrapper<User>().eq("userid", user.getUserid()));
             return ResultMsg.ok().data("token", token);
         } else {
-            System.out.println("in selse");
+            System.out.println("in else");
             return ResultMsg.error().result(false);
         }
 
@@ -93,8 +95,9 @@ public class LoginController {
         }
     }
 
+    @ApiOperation("获取用户的基础信息")
     @RequestMapping("/api/secure/getUserInfo")
-    public ResultMsg login(HttpServletRequest request) {
+    public ResultMsg getUserInfo(HttpServletRequest request) {
         String userName = request.getAttribute("name").toString();
         String email = request.getAttribute("email").toString();
         String token = request.getAttribute("token").toString();
@@ -126,6 +129,12 @@ public class LoginController {
         return ResultMsg.ok().result(true).data("data", map);
     }
 
+    @ApiOperation("验证用户是否登录")
+    @RequestMapping("/api/secure/checkIfLogin")
+    public ResultMsg checkIfLogin(){
+        //经过secure的filter，已经是确信登录状态了
+        return ResultMsg.ok().result(true);
+    }
 
     @RequestMapping("/api/secure/queryNumberOfWishAndProductAndInvoiceNum")
     public ResultMsg queryNumberOfWishAndProductAndInvoiceNum(HttpServletRequest request) {

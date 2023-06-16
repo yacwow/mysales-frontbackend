@@ -146,7 +146,7 @@ public class AccountDetailController {
         Invoice invoice = invoiceService.getOne(new QueryWrapper<Invoice>()
                 .select("invoiceid", "userid", "orderdate", "paymentmethod", "deliverymethod", "originprice", "normaldiscount",
                         "timelydiscount", "secondhalfdiscount", "usedpoint", "priceafterdiscount", "deliveryfee", "paymentamount",
-                        "paymentstatus",  "detailaddress", "country", "province", "city", "area", "postcode", "updateemail", "firstname",
+                        "paymentstatus", "detailaddress", "country", "province", "city", "area", "postcode", "updateemail", "firstname",
                         "lastname", "mobilephone")
                 .eq("invoiceid", invoiceNum));
         if (invoice == null) {
@@ -154,7 +154,7 @@ public class AccountDetailController {
         }
         List<InvoiceProductProductdetail> invoiceProductProductdetailList = invoiceProductProductdetailService
                 .list(new QueryWrapper<InvoiceProductProductdetail>()
-                        .eq("invoiceid_productdetail", invoiceNum).select("productsize", "productcolor", "amount", "imgsrc","productid_productdetail"));
+                        .eq("invoiceid_productdetail", invoiceNum).select("productsize", "productcolor", "amount", "imgsrc", "productid_productdetail"));
         Map<String, Object> willpassdata = new HashMap<>();
         List<Map<String, Object>> productDataList = new ArrayList<>();
         for (int j = 0; j < invoiceProductProductdetailList.size(); j++) {
@@ -191,7 +191,7 @@ public class AccountDetailController {
 
 
         Map<String, Object> userInfo = new HashMap<>();
-        userInfo.put("fullName", invoice.getFirstname() +" "+ invoice.getLastname());
+        userInfo.put("fullName", invoice.getFirstname() + " " + invoice.getLastname());
         userInfo.put("email", invoice.getUpdateemail());
         userInfo.put("phone", invoice.getMobilephone());
         userInfo.put("postcode", invoice.getPostcode());
@@ -215,10 +215,35 @@ public class AccountDetailController {
         //先找到userid，然后找到invoice，每个invoice找到下面的product组成集合，还要找到invoice-product-cartlist的具体大小尺寸数量
         User user = userService.getOne(new QueryWrapper<User>().eq("email", email).select("userid"));
         Invoice invoice = invoiceService.getOne(new QueryWrapper<Invoice>().eq("userid", user.getUserid())
-                .eq("invoiceid", number));
+                .eq("invoiceid", number)
+                .select("invoiceid", "userid", "paymentmethod", "deliverymethod", "priceafterdiscount", "deliveryfee", "paymentamount",
+                        "detailaddress", "country", "province", "city", "area",
+                        "firstname", "lastname", "mobilephone","normaldiscount","originprice","timelydiscount","secondhalfdiscount","usedpoint"
+                ));
 
         if (invoice != null) {
-            return ResultMsg.ok().result(true).data("serverSideData", invoice);
+            Map<String,Object> serverSideData=new HashMap<>();
+            serverSideData.put("invoiceid",invoice.getInvoiceid());
+            serverSideData.put("userid",invoice.getUserid());
+            serverSideData.put("paymentmethod",invoice.getPaymentmethod());
+            serverSideData.put("deliverymethod",invoice.getDeliverymethod());
+            serverSideData.put("originprice",invoice.getOriginprice());
+            serverSideData.put("timelydiscount",invoice.getTimelydiscount());
+            serverSideData.put("secondhalfdiscount",invoice.getSecondhalfdiscount());
+            serverSideData.put("usedpoint",invoice.getUsedpoint());
+            serverSideData.put("normaldiscount",invoice.getNormaldiscount());
+            serverSideData.put("priceafterdiscount",invoice.getPriceafterdiscount());
+            serverSideData.put("deliveryfee",invoice.getDeliveryfee());
+            serverSideData.put("paymentamount",invoice.getPaymentamount());
+            serverSideData.put("detailaddress",invoice.getDetailaddress());
+            serverSideData.put("country",invoice.getCountry());
+            serverSideData.put("province",invoice.getProvince());
+            serverSideData.put("city",invoice.getCity());
+            serverSideData.put("area",invoice.getArea());
+            serverSideData.put("firstname",invoice.getFirstname());
+            serverSideData.put("lastname",invoice.getLastname());
+            serverSideData.put("mobilephone",invoice.getMobilephone());
+            return ResultMsg.ok().result(true).data("serverSideData", serverSideData);
         } else {
             return ResultMsg.ok().result(true).code(404);
         }
@@ -339,10 +364,10 @@ public class AccountDetailController {
     }
 
     @RequestMapping(value = "/api/secure/changeInvoiceStatus/{deleteNum}", method = {RequestMethod.GET, RequestMethod.POST})
-    private ResultMsg changeInvoiceStatus(@PathVariable String deleteNum,@RequestParam Map<String, Object> params) {
-        String cancelReason=(String) params.get("cancelReason");
+    private ResultMsg changeInvoiceStatus(@PathVariable String deleteNum, @RequestParam Map<String, Object> params) {
+        String cancelReason = (String) params.get("cancelReason");
         Boolean flag = invoiceService.update(new UpdateWrapper<Invoice>().eq("invoiceid", deleteNum)
-                .set("paymentstatus", "cancelled").set("cancelreason",cancelReason));
+                .set("paymentstatus", "cancelled").set("cancelreason", cancelReason));
         return ResultMsg.ok().result(flag);
     }
 

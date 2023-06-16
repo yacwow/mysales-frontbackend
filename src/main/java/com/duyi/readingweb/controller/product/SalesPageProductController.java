@@ -9,6 +9,7 @@ import com.duyi.readingweb.bean.product.salesPageData.SalesPageBuyMatch;
 import com.duyi.readingweb.bean.product.salesPageData.SalesPageComment;
 import com.duyi.readingweb.bean.product.salesPageData.SalesPagePicture;
 import com.duyi.readingweb.entity.eventManagement.SpecialEventDetail;
+import com.duyi.readingweb.entity.framework.Webdata;
 import com.duyi.readingweb.entity.product.Product;
 import com.duyi.readingweb.entity.product.ProductImg;
 import com.duyi.readingweb.entity.product.UserProductWishlist;
@@ -16,6 +17,7 @@ import com.duyi.readingweb.entity.user.Comment;
 import com.duyi.readingweb.entity.user.UserVisitedProduct;
 import com.duyi.readingweb.service.eventManagement.SpecialEventDetailService;
 import com.duyi.readingweb.service.eventManagement.SpecialEventService;
+import com.duyi.readingweb.service.framework.WebDataService;
 import com.duyi.readingweb.service.product.ProductImgService;
 import com.duyi.readingweb.service.product.ProductService;
 import com.duyi.readingweb.service.product.UserProductWishlistService;
@@ -44,7 +46,8 @@ public class SalesPageProductController {
     private SpecialEventDetailService specialEventDetailService;
     @Autowired
     private UserVisitedProductService userVisitedProductService;
-
+@Autowired
+private WebDataService webDataService;
     @RequestMapping(value = "/api/salesPageProduct/{productId}", method = {RequestMethod.GET, RequestMethod.POST})
     public ResultMsg getSalesPageProduct(@PathVariable("productId") Integer productId,
                                          @RequestParam Map<String, Object> params, HttpServletRequest request) {
@@ -251,12 +254,12 @@ public class SalesPageProductController {
         List<Product> productsWithSameCategory = productService.list(new QueryWrapper<Product>()
                 .select("tenpercentoff", "secondonehalf", "href", "bigimgsrc", "newprice", "marketprice", "idproduct")
                 .eq("secondlevelcategory", product.getSecondlevelcategory()).orderByDesc("tenpercentoff")
-                .orderByDesc("RAND()")
-                .last("LIMIT 8"));
+                .orderByDesc("RAND()").ne("idproduct",productId)
+                .last("LIMIT 18"));
 //        Collections.shuffle(productsWithSameCategory);
         List<Map<String, Object>> salesPageBuyMatchList = new ArrayList<>();
         for (int i = 0; i < productsWithSameCategory.size(); i++) {
-            if (i >= 8) break;
+            if (i >= 17) break;
             List<ProductImg> productImgList1 = productImgService.list(new QueryWrapper<ProductImg>()
                     .select("bigimgsrc").eq("idproduct", productsWithSameCategory.get(i).getIdproduct())
                     .orderByDesc("first").last("limit 1"));
@@ -268,6 +271,17 @@ public class SalesPageProductController {
         //是不是timeseller的东西
         SpecialEventDetail specialEventDetail = specialEventDetailService.getOne(new QueryWrapper<SpecialEventDetail>()
                 .select("productid").eq("specialcode", "timeseller").eq("productid", productId));
+
+
+        //后面需要加时间的限定，redis之后吧
+
+        //        if(specialEventDetail!=null){
+//            webDataService.list(new QueryWrapper<Webdata>().select("expiretime")
+//                    .orderByDesc("expiretime").eq("weburl","/timeseller"));
+//        }
+//        // 哪些需要查询
+//        String[] webUrls = {"/bestSeller", "/timeseller", "/dailyNew", "/discount"};
+
         SalesPageProductMobile salesPageProduct = new SalesPageProductMobile(
                 product.getIdproduct(),
                 product.getProductdetailsize(),
@@ -298,7 +312,8 @@ public class SalesPageProductController {
         //先找到timeseller的相关信息，先取出四十个，然后随机拿出其中的十四个
         List<SpecialEventDetail> specialEventDetailList = specialEventDetailService
                 .list(new QueryWrapper<SpecialEventDetail>().select("productid")
-                        .eq("specialcode", "timeseller").orderByDesc("categoryRankNum").last("limit 40"));
+                        .eq("specialcode", "timeseller").ne("productid",productId)
+                        .orderByDesc("categoryRankNum").last("limit 40"));
         List<Integer> timeSellerProductIdList = specialEventDetailList.stream()
                 .map(SpecialEventDetail::getProductid).collect(Collectors.toList());
         //随机取出14个

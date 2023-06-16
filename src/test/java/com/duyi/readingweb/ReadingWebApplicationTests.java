@@ -28,10 +28,10 @@ class ReadingWebApplicationTests {
     /**
      * 测试发送文本邮件
      */
-    @Test
-    public void sendmail() {
-        mailService.sendSimpleMail("HAOCHENBC@GMAIL.COM", "主题：你好普通邮件", "内容：第一封邮件");
-    }
+//    @Test
+//    public void sendmail() {
+//        mailService.sendSimpleMail("HAOCHENBC@GMAIL.COM", "主题：你好普通邮件", "内容：第一封邮件");
+//    }
 
 //    @Test
 //    public void sendmailHtml() {

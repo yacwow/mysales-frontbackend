@@ -24,13 +24,14 @@ public class SecondHalfController {
     public ResultMsg getSecondHalfPageData(@PathVariable("page") Integer page) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("limit ").append((page - 1) * 60).append(",60");
-        List<Product> productList = productService.list(new QueryWrapper<Product>().eq("secondonehalf", 1)
+        List<Product> productList = productService.list(new QueryWrapper<Product>().ge("secondonehalf", 1)
                 .select("bigimgsrc","href","tenpercentoff","newprice","originprice","stock","productdescription")
+                        .orderByDesc("secondonehalf")
                 .last(stringBuilder.toString()));
         List<Map<String, Object>> secondHalfPageData = new ArrayList<>();
         Integer number=0;
         if(page==1){
-            number  =(int)productService.count(new QueryWrapper<Product>().eq("secondonehalf", 1));
+            number  =(int)productService.count(new QueryWrapper<Product>().ge("secondonehalf", 1));
         }
 
         for (int i = 0; i < productList.size(); i++) {

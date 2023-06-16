@@ -45,8 +45,12 @@ public class CartShoppingController {
 
     @RequestMapping("/api/secure/getCustomerInfo")
     private ResultMsg getCustomerInfo(HttpServletRequest request) {
-        List<Couponlist> timelyCouponlistList = couponlistService.list(new QueryWrapper<Couponlist>().eq("whocanapply", 0).lt("startdate", LocalDateTime.now()).gt("expireDate", LocalDateTime.now()));
-        List<Couponlist> normalCouponlistList = couponlistService.list(new QueryWrapper<Couponlist>().eq("whocanapply", 1).lt("startdate", LocalDateTime.now()).gt("expireDate", LocalDateTime.now()));
+        List<Couponlist> timelyCouponlistList = couponlistService.list(new QueryWrapper<Couponlist>()
+                .eq("whocanapply", 0).lt("startdate", LocalDateTime.now())
+                .gt("expireDate", LocalDateTime.now()));
+        List<Couponlist> normalCouponlistList = couponlistService.list(new QueryWrapper<Couponlist>()
+                .eq("whocanapply", 1).lt("startdate", LocalDateTime.now())
+                .gt("expireDate", LocalDateTime.now()));
         List<User> userList = userService.list(new QueryWrapper<User>().eq("email", request.getAttribute("email")));
         Integer deduction = userList.get(0).getDeduction();
         List<Map<String, Object>> timeCoupon = new ArrayList<>();
@@ -138,6 +142,7 @@ public class CartShoppingController {
     }
 
 
+    //目前看来这个东西没屁用
     @RequestMapping(value = "/api/secure/updatePaymentAmountFromUserSide", method = {RequestMethod.GET, RequestMethod.POST})
     public ResultMsg updatePaymentAmountFromUserSide(@RequestParam Map<String, Object> params, HttpServletRequest request) {
         System.out.println(params);

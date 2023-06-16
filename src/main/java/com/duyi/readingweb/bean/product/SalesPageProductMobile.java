@@ -1,6 +1,6 @@
 package com.duyi.readingweb.bean.product;
 
-import com.duyi.readingweb.bean.product.salesPageData.SalesPageBuyMatch;
+
 import com.duyi.readingweb.bean.product.salesPageData.SalesPageComment;
 import com.duyi.readingweb.bean.product.salesPageData.SalesPagePicture;
 import lombok.AllArgsConstructor;
